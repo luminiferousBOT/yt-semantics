@@ -185,6 +185,3 @@ For a public deployment, separate the API, scheduled ingestion, and any transcri
 
 This is an early working foundation aimed at experimentation and curated, small-to-medium channel rosters. Authentication, multi-tenant authorization, production queues, rich reranking, and a proper profile-vector store are the natural next steps.
 
-## License
-
-No license has been selected yet. Add one before accepting outside contributions or publishing derivative work under a specific set of terms.
