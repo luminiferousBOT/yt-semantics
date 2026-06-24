@@ -1,0 +1,3 @@
+# Optional local transcription support. Install only on a machine that will
+# transcribe media you are authorized to process.
+faster-whisper>=1.1,<2

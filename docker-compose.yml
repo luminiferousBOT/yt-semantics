@@ -1,0 +1,38 @@
+services:
+  api:
+    build: .
+    env_file: .env
+    volumes:
+      - ./:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      qdrant:
+        condition: service_started
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: yt_semantics
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d yt_semantics"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  qdrant:
+    image: qdrant/qdrant:v1.12.1
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant_data:/qdrant/storage
+volumes:
+  postgres_data:
+  qdrant_data:
+

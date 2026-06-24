@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>YouTube Semantics</title>
+  <style>
+    :root{color-scheme:dark;font-family:Inter,system-ui,sans-serif;background:#0a0d14;color:#edf0f7} body{margin:0;max-width:1000px;padding:8vh 6vw;margin:auto} h1{font-size:clamp(2rem,6vw,4rem);margin:0}.accent{color:#9da8ff}form{display:flex;gap:.7rem;margin:2rem 0}input{flex:1;padding:1rem;border-radius:12px;border:1px solid #293145;background:#151a26;color:inherit;font-size:1rem}button{border:0;border-radius:12px;padding:0 1.2rem;background:#9da8ff;color:#101325;font-weight:700;cursor:pointer}.hint{color:#9ea8ba}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem}.card{background:#151a26;border:1px solid #293145;border-radius:16px;padding:1.1rem}.card h2{font-size:1.05rem;margin:.4rem 0}.meta{font-size:.85rem;color:#9da8ff}.snippet{line-height:1.45;color:#c5ccdb}.empty{margin-top:3rem;color:#9ea8ba}a{color:inherit;text-decoration:none}.card:hover{border-color:#9da8ff}img{width:100%;border-radius:10px;aspect-ratio:16/9;object-fit:cover}
+  </style>
+</head>
+<body>
+  <p class="accent">DISCOVERY-DRIVEN VIDEO KNOWLEDGE</p><h1>Find the <span class="accent">exact moment</span> that matters.</h1>
+  <p class="hint">Search concepts, mechanisms, questions, and rabbit holes—not just titles.</p>
+  <form id="search"><input id="query" autofocus placeholder="e.g. yoga for anxiety" required><button>Explore</button></form>
+  <main id="results" class="grid"><p class="empty">Index a channel through <code>/docs</code>, then let curiosity do its thing.</p></main>
+  <script>
+    const form=document.querySelector('#search'), query=document.querySelector('#query'), results=document.querySelector('#results');
+    const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    form.addEventListener('submit',async e=>{e.preventDefault();results.innerHTML='<p class="empty">Searching the knowledge layer…</p>';try{const r=await fetch('/search',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({query:query.value})});if(!r.ok)throw Error('Search is not ready. Confirm your API keys and Qdrant are running.');const hits=await r.json();results.innerHTML=hits.length?hits.map(hit=>`<a class="card" target="_blank" href="https://www.youtube.com/watch?v=${encodeURIComponent(hit.video_id)}&t=${hit.timestamp_seconds}">${hit.thumbnail_url?`<img src="${esc(hit.thumbnail_url)}" alt="">`:''}<p class="meta">${esc(hit.channel)} · ${Math.floor(hit.timestamp_seconds/60)}:${String(hit.timestamp_seconds%60).padStart(2,'0')}</p><h2>${esc(hit.title)}</h2><p class="snippet">${esc(hit.text_segment)}</p></a>`).join(''):'<p class="empty">No moments found yet.</p>'}catch(err){results.innerHTML=`<p class="empty">${esc(err.message)}</p>`}});
+  </script>
+</body>
+</html>
